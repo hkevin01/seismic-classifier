@@ -1,0 +1,5 @@
+# Processed Data Directory
+
+This directory contains preprocessed and feature-engineered data ready for machine learning.
+
+*Note: This directory is excluded from version control due to large file sizes.*

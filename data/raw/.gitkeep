@@ -1,0 +1,40 @@
+# Raw Data Directory
+
+This directory contains raw seismic data downloaded from external sources.
+
+## Structure
+
+```
+raw/
+├── earthquakes/          # Earthquake catalog data
+│   ├── usgs/            # USGS earthquake data
+│   └── iris/            # IRIS catalog data
+├── waveforms/           # Seismic waveform data
+│   ├── mseed/           # miniSEED format files
+│   └── sac/             # SAC format files
+└── metadata/            # Station and instrument metadata
+    ├── stations/        # Station information
+    └── responses/       # Instrument responses
+```
+
+## File Naming Conventions
+
+### Earthquake Data
+- `earthquakes_YYYY-MM-DD_to_YYYY-MM-DD.csv`
+- `events_mag{min}-{max}_YYYY-MM-DD.json`
+
+### Waveforms
+- `{network}.{station}.{location}.{channel}.{starttime}.mseed`
+- `{eventid}_{network}_{station}_{channel}.sac`
+
+### Metadata
+- `stations_{network}_YYYY-MM-DD.xml`
+- `response_{network}_{station}_{channel}.xml`
+
+## Data Sources
+
+- **USGS**: https://earthquake.usgs.gov/
+- **IRIS**: https://www.iris.edu/
+- **FDSN**: International Federation of Digital Seismograph Networks
+
+*Note: This directory is excluded from version control due to large file sizes.*

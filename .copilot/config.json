@@ -1,0 +1,133 @@
+{
+  "version": "1.0",
+  "description": "GitHub Copilot configuration for Seismic Event Classification System",
+  "settings": {
+    "suggestions": {
+      "enabled": true,
+      "includeComments": true,
+      "includeDocstrings": true,
+      "languages": {
+        "python": {
+          "enabled": true,
+          "style": "pep8",
+          "maxLineLength": 88,
+          "useTypeHints": true,
+          "includeTests": true
+        },
+        "yaml": {
+          "enabled": true,
+          "indentSize": 2
+        },
+        "markdown": {
+          "enabled": true,
+          "includeCodeBlocks": true
+        },
+        "json": {
+          "enabled": true,
+          "indentSize": 2
+        }
+      }
+    },
+    "context": {
+      "includeOpenFiles": true,
+      "includeRecentFiles": true,
+      "includeProjectStructure": true,
+      "maxContextLines": 1000
+    },
+    "filtering": {
+      "excludePaths": [
+        "**/__pycache__/**",
+        "**/node_modules/**",
+        "**/venv/**",
+        "**/env/**",
+        "**/.git/**",
+        "**/data/raw/**",
+        "**/data/cache/**",
+        "**/logs/**"
+      ],
+      "includePatterns": [
+        "**/*.py",
+        "**/*.md",
+        "**/*.yaml",
+        "**/*.yml",
+        "**/*.json",
+        "**/*.txt",
+        "**/*.cfg",
+        "**/*.ini"
+      ]
+    },
+    "codeGeneration": {
+      "preferredPatterns": [
+        "type_hints",
+        "docstrings",
+        "error_handling",
+        "logging",
+        "unit_tests"
+      ],
+      "frameworks": [
+        "obspy",
+        "numpy",
+        "pandas",
+        "scikit-learn",
+        "tensorflow",
+        "matplotlib",
+        "plotly",
+        "dash",
+        "streamlit"
+      ]
+    }
+  },
+  "prompts": {
+    "seismology": {
+      "description": "Generate seismology-specific code",
+      "template": "Generate Python code for seismic data processing using ObsPy. Focus on proper error handling, type hints, and seismological best practices."
+    },
+    "machine_learning": {
+      "description": "Generate ML code for seismic classification",
+      "template": "Create machine learning code for seismic event classification. Use scikit-learn or TensorFlow, include proper validation, and follow ML best practices."
+    },
+    "data_pipeline": {
+      "description": "Generate data pipeline code",
+      "template": "Create robust data pipeline code with proper error handling, logging, and async support for seismic data processing."
+    },
+    "testing": {
+      "description": "Generate comprehensive tests",
+      "template": "Create thorough unit tests using pytest. Include edge cases, mocking for external services, and proper test fixtures."
+    },
+    "documentation": {
+      "description": "Generate comprehensive documentation",
+      "template": "Create clear, comprehensive documentation with examples, proper formatting, and seismology context."
+    }
+  },
+  "codeReview": {
+    "enabled": true,
+    "checks": [
+      "type_safety",
+      "error_handling",
+      "performance",
+      "security",
+      "documentation",
+      "testing_coverage"
+    ],
+    "seismologySpecific": [
+      "proper_obspy_usage",
+      "signal_processing_accuracy",
+      "coordinate_system_correctness",
+      "time_handling",
+      "metadata_validation"
+    ]
+  },
+  "snippets": {
+    "enabled": true,
+    "categories": [
+      "seismic_data_loading",
+      "signal_processing",
+      "feature_extraction",
+      "model_training",
+      "visualization",
+      "api_clients",
+      "error_handling",
+      "logging_setup"
+    ]
+  }
+}
