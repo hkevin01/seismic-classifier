@@ -3,10 +3,10 @@
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Development Status](https://img.shields.io/badge/status-Phases%201--3%20%26%20GUI%20Complete-brightgreen.svg)](STATUS_COMPLETE.md)
+[![Development Status](https://img.shields.io/badge/status-Phase%204%20Complete-brightgreen.svg)](STATUS_COMPLETE.md)
 [![CI/CD Pipeline](https://github.com/hkevin01/seismic-classifier/actions/workflows/ci.yml/badge.svg)](https://github.com/hkevin01/seismic-classifier/actions/workflows/ci.yml)
 
-A comprehensive Python-based machine learning platform for real-time seismic event detection, analysis, and classification. This system integrates with authoritative seismic data sources (USGS and IRIS) to provide intelligent earthquake monitoring and analysis capabilities. **Now with complete Phase 1-3 implementation including production-ready data pipeline, advanced signal processing, machine learning models, and a modern React-based GUI dashboard!**
+A comprehensive Python-based machine learning platform for real-time seismic event detection, analysis, and classification. This system integrates with authoritative seismic data sources (USGS and IRIS) to provide intelligent earthquake monitoring and analysis capabilities. **Now with complete Phase 1-4 implementation including production-ready data pipeline, advanced signal processing, machine learning models, modern React-based GUI dashboard, and advanced analytics capabilities!**
 
 ## 🌍 Features
 
@@ -31,6 +31,14 @@ A comprehensive Python-based machine learning platform for real-time seismic eve
 - **Model Training**: Cross-validation, hyperparameter tuning, and performance evaluation
 - **Feature Importance**: Automated ranking and selection with interpretability analysis
 - **Model Persistence**: Save/load capabilities for trained models with joblib integration
+
+### ✅ **Advanced Analytics System (Phase 4)**
+
+- **Real-time Event Detection**: Combined STA/LTA and deep learning approach for robust detection
+- **Magnitude Estimation**: ML-based magnitude estimation with confidence intervals
+- **Location Determination**: Advanced triangulation with uncertainty quantification
+- **Confidence Analysis**: Statistical bounds and visualization for all parameters
+- **Parallel Processing**: Multi-core processing capabilities for high-throughput analysis
 
 ### ✅ **Interactive GUI Dashboard**
 
@@ -187,7 +195,48 @@ print('See notebooks/seismic_classifier_demo.ipynb for complete training example
 "
 ```
 
-## �️ Interactive GUI Dashboard
+#### 5. Run Advanced Analytics
+
+```bash
+# Run real-time event detection and analysis
+python -c "
+from src.seismic_classifier.advanced_analytics import RealTimeDetector, MagnitudeEstimator
+import numpy as np
+
+# Initialize components
+detector = RealTimeDetector()
+magnitude_estimator = MagnitudeEstimator()
+
+# Process sample data
+data = np.random.randn(6000)  # 60 seconds at 100 Hz
+events = await detector.process_stream(data)
+if events:
+    magnitudes = magnitude_estimator.batch_estimate([e['waveform'] for e in events])
+    print(f'Detected {len(events)} events with magnitudes: {[m['magnitude'] for m in magnitudes]}')
+"
+```
+
+## 📊 Architecture
+
+### Data Pipeline
+```
+Raw Data → Validation → Preprocessing → Feature Extraction → Classification
+   ↓          ↓             ↓               ↓                   ↓
+Storage    Cleaning     Filtering      Feature Matrix      Prediction
+   ↓          ↓             ↓               ↓                   ↓
+Cache     Reporting    QC Metrics     Feature Store        Results
+```
+
+### Advanced Analytics Pipeline
+```
+Continuous Data → Event Detection → Magnitude Estimation → Location Analysis
+       ↓               ↓                   ↓                    ↓
+  Preprocessing    ML Validation     Confidence Bounds     Uncertainty
+       ↓               ↓                   ↓                    ↓
+   Processing     Alert System      Statistical Tests     Visualization
+```
+
+## 🖥️ Interactive GUI Dashboard
 
 For a modern, web-based interface to interact with seismic data, we've built a comprehensive React application:
 
