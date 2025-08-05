@@ -1,0 +1,48 @@
+# CODEOWNERS file for seismic-classifier
+# This file defines individuals or teams that are responsible for code in the repository.
+
+# Global owners - responsible for everything unless a later match takes precedence
+* @seismic-classifier/maintainers
+
+# Core source code
+/src/ @seismic-classifier/core-team
+
+# Data pipeline components
+/src/data_pipeline/ @seismic-classifier/data-team @seismic-classifier/core-team
+
+# Machine learning models
+/src/models/ @seismic-classifier/ml-team @seismic-classifier/core-team
+
+# Feature engineering
+/src/feature_engineering/ @seismic-classifier/signal-processing-team @seismic-classifier/core-team
+
+# Visualization and dashboard
+/src/visualization/ @seismic-classifier/frontend-team @seismic-classifier/core-team
+/dashboard/ @seismic-classifier/frontend-team @seismic-classifier/core-team
+
+# Configuration files
+/config/ @seismic-classifier/devops-team @seismic-classifier/maintainers
+
+# Tests
+/tests/ @seismic-classifier/core-team
+
+# Documentation
+/docs/ @seismic-classifier/docs-team @seismic-classifier/maintainers
+*.md @seismic-classifier/docs-team
+
+# GitHub workflows and configurations
+/.github/ @seismic-classifier/devops-team @seismic-classifier/maintainers
+
+# Python packaging and dependencies
+requirements.txt @seismic-classifier/devops-team @seismic-classifier/maintainers
+setup.py @seismic-classifier/devops-team @seismic-classifier/maintainers
+pyproject.toml @seismic-classifier/devops-team @seismic-classifier/maintainers
+
+# Jupyter notebooks
+/notebooks/ @seismic-classifier/research-team @seismic-classifier/core-team
+
+# Scripts
+/scripts/ @seismic-classifier/core-team
+
+# VS Code configuration
+/.vscode/ @seismic-classifier/devops-team

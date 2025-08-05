@@ -1,0 +1,204 @@
+# Seismic Event Classification Configuration
+
+# API Configuration
+api:
+  usgs:
+    base_url: "https://earthquake.usgs.gov/fdsnws/event/1/"
+    rate_limit: 10  # requests per second
+    timeout: 30  # seconds
+    retry_attempts: 3
+    retry_delay: 1  # seconds
+  
+  iris:
+    base_url: "IRIS"  # ObsPy FDSN client identifier
+    rate_limit: 5  # requests per second
+    timeout: 60  # seconds
+    retry_attempts: 3
+    retry_delay: 2  # seconds
+
+# Data Collection Parameters
+data_collection:
+  earthquake_filters:
+    min_magnitude: 4.0
+    max_magnitude: 9.0
+    min_depth: 0.0  # km
+    max_depth: 700.0  # km
+    event_types: ["earthquake", "quarry blast"]
+  
+  time_window:
+    default_days: 30  # days of data to fetch by default
+    max_days: 365  # maximum days in single request
+  
+  geographic_bounds:
+    global: true
+    # Custom bounds (if global: false)
+    min_latitude: -90.0
+    max_latitude: 90.0
+    min_longitude: -180.0
+    max_longitude: 180.0
+  
+  waveform_settings:
+    pre_event_time: 60  # seconds before event
+    post_event_time: 300  # seconds after event
+    preferred_channels: ["BHZ", "HHZ", "LHZ"]  # Z-component channels
+    preferred_networks: ["IU", "II", "G", "TA"]  # Global networks
+
+# Feature Engineering Parameters
+feature_engineering:
+  signal_processing:
+    sampling_rate: 20.0  # Hz (target sampling rate)
+    filter_type: "bandpass"
+    filter_corners: 4
+    filter_zerophase: true
+    frequency_bands:
+      low: [0.1, 1.0]  # Hz
+      medium: [1.0, 10.0]  # Hz
+      high: [10.0, 20.0]  # Hz
+  
+  time_domain_features:
+    - "peak_amplitude"
+    - "rms_amplitude"
+    - "zero_crossing_rate"
+    - "kurtosis"
+    - "skewness"
+    - "signal_energy"
+    - "duration"
+  
+  frequency_domain_features:
+    - "dominant_frequency"
+    - "spectral_centroid"
+    - "spectral_spread"
+    - "spectral_rolloff"
+    - "spectral_flatness"
+    - "power_spectral_density"
+  
+  wavelet_features:
+    wavelet_type: "db4"
+    decomposition_levels: 6
+    frequency_bands: 6
+
+# Machine Learning Configuration
+machine_learning:
+  train_test_split: 0.8
+  validation_split: 0.2
+  random_state: 42
+  
+  neural_network:
+    hidden_layers: [128, 64, 32]
+    activation: "relu"
+    dropout_rate: 0.3
+    batch_size: 32
+    epochs: 100
+    learning_rate: 0.001
+    early_stopping_patience: 10
+  
+  random_forest:
+    n_estimators: 100
+    max_depth: 20
+    min_samples_split: 5
+    min_samples_leaf: 2
+    random_state: 42
+  
+  xgboost:
+    n_estimators: 100
+    max_depth: 6
+    learning_rate: 0.1
+    subsample: 0.8
+    random_state: 42
+  
+  svm:
+    kernel: "rbf"
+    C: 1.0
+    gamma: "scale"
+    probability: true
+  
+  hyperparameter_tuning:
+    method: "grid_search"  # or "random_search"
+    cv_folds: 5
+    n_jobs: -1
+
+# Classification Categories
+classification:
+  event_types:
+    - "tectonic_earthquake"
+    - "volcanic_earthquake"
+    - "explosion"
+    - "quarry_blast"
+    - "nuclear_test"
+    - "induced_earthquake"
+  
+  magnitude_classes:
+    - "micro"      # < 3.0
+    - "minor"      # 3.0 - 3.9
+    - "light"      # 4.0 - 4.9
+    - "moderate"   # 5.0 - 5.9
+    - "strong"     # 6.0 - 6.9
+    - "major"      # 7.0 - 7.9
+    - "great"      # 8.0+
+
+# Visualization Configuration
+visualization:
+  plotting:
+    figure_size: [12, 8]
+    dpi: 300
+    style: "seaborn-v0_8"
+    color_palette: "viridis"
+  
+  dashboard:
+    update_interval: 60  # seconds
+    max_events_display: 1000
+    default_map_center: [0, 0]  # lat, lon
+    default_map_zoom: 2
+  
+  maps:
+    tile_layer: "OpenStreetMap"
+    marker_size: 5
+    opacity: 0.7
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_handler:
+    enabled: true
+    filename: "logs/seismic_classifier.log"
+    max_bytes: 10485760  # 10MB
+    backup_count: 5
+  
+  console_handler:
+    enabled: true
+    level: "INFO"
+
+# Storage Configuration
+storage:
+  data_directory: "data/"
+  cache_directory: "data/cache/"
+  models_directory: "data/models/"
+  results_directory: "data/results/"
+  
+  file_formats:
+    waveforms: "mseed"
+    features: "parquet"
+    models: "joblib"
+    results: "csv"
+  
+  compression:
+    enabled: true
+    method: "gzip"
+    level: 6
+
+# Performance Settings
+performance:
+  multiprocessing:
+    enabled: true
+    max_workers: 4  # null for auto-detection
+  
+  memory_limit: "8GB"  # Maximum memory usage
+  batch_processing:
+    enabled: true
+    batch_size: 100  # events per batch
+  
+  caching:
+    enabled: true
+    ttl: 3600  # seconds (1 hour)
+    max_size: 1000  # maximum cached items
