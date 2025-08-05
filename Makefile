@@ -6,11 +6,15 @@ PYTHON = $(VENV_NAME)/bin/python
 PIP = $(VENV_NAME)/bin/pip
 ACTIVATE = source $(VENV_NAME)/bin/activate
 
+# Make scripts executable on first run
+$(shell chmod +x scripts/*.sh 2>/dev/null || true)
+
 # Default target
 help:
 	@echo "Available commands:"
 	@echo "  venv          Create and setup virtual environment"
 	@echo "  setup         Complete project setup (venv + install + hooks)"
+	@echo "  verify        Verify environment setup"
 	@echo "  install       Install package and dependencies"
 	@echo "  install-dev   Install package with development dependencies"
 	@echo "  test          Run tests"
@@ -20,6 +24,7 @@ help:
 	@echo "  type-check    Run type checking with mypy"
 	@echo "  security      Run security checks"
 	@echo "  clean         Clean build artifacts"
+	@echo "  clean-venv    Remove virtual environment"
 	@echo "  build         Build package"
 	@echo "  docs          Build documentation"
 	@echo "  serve-docs    Serve documentation locally"
@@ -47,6 +52,12 @@ setup: venv
 		$(ACTIVATE) && pre-commit install; \
 	fi
 	@echo "Setup complete! Activate with: source $(VENV_NAME)/bin/activate"
+	@echo "Run 'make verify' to check the setup"
+
+# Verify setup
+verify: venv
+	@echo "Verifying environment setup..."
+	$(ACTIVATE) && bash scripts/verify_setup.sh
 
 # Installation targets (ensure venv exists)
 install: venv

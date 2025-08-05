@@ -154,20 +154,20 @@ class Config:
         debug_env = os.getenv('DEBUG')
         if debug_env:
             config.debug = debug_env.lower() == 'true'
-        
+
         verbose_env = os.getenv('VERBOSE')
         if verbose_env:
             config.verbose = verbose_env.lower() == 'true'
-        
+
         n_jobs_env = os.getenv('N_JOBS')
         if n_jobs_env:
             config.n_jobs = int(n_jobs_env)
-        
+
         # API configuration
         usgs_url = os.getenv('USGS_API_URL')
         if usgs_url:
             config.api.usgs_base_url = usgs_url
-        
+
         iris_url = os.getenv('IRIS_API_URL')
         if iris_url:
             config.api.iris_base_url = iris_url        return config

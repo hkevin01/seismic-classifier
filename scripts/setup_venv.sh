@@ -39,7 +39,7 @@ check_python_version() {
     local version=$($python_cmd --version 2>&1 | cut -d' ' -f2)
     local major=$(echo $version | cut -d'.' -f1)
     local minor=$(echo $version | cut -d'.' -f2)
-    
+
     if [[ $major -eq 3 && $minor -ge 8 ]]; then
         return 0
     else
@@ -63,7 +63,7 @@ find_python() {
 # Main setup function
 setup_environment() {
     print_header "Setting up Python virtual environment for Seismic Classifier"
-    
+
     # Check if virtual environment already exists
     if [[ -d "$VENV_NAME" ]]; then
         print_warning "Virtual environment '$VENV_NAME' already exists"
@@ -79,7 +79,7 @@ setup_environment() {
             return 0
         fi
     fi
-    
+
     # Find suitable Python interpreter
     print_status "Finding suitable Python interpreter..."
     if ! PYTHON_CMD=$(find_python); then
@@ -87,47 +87,47 @@ setup_environment() {
         print_error "Please install Python $PYTHON_MIN_VERSION or later"
         exit 1
     fi
-    
+
     print_status "Using Python: $PYTHON_CMD ($($PYTHON_CMD --version))"
-    
+
     # Create virtual environment
     print_status "Creating virtual environment '$VENV_NAME'..."
     $PYTHON_CMD -m venv "$VENV_NAME"
-    
+
     # Activate virtual environment
     print_status "Activating virtual environment..."
     source "$VENV_NAME/bin/activate"
-    
+
     # Upgrade pip
     print_status "Upgrading pip..."
     pip install --upgrade pip setuptools wheel
-    
+
     # Install dependencies
     if [[ -f "requirements.txt" ]]; then
         print_status "Installing core dependencies from requirements.txt..."
         pip install -r requirements.txt
     fi
-    
+
     if [[ -f "requirements-dev.txt" ]]; then
         print_status "Installing development dependencies from requirements-dev.txt..."
         pip install -r requirements-dev.txt
     fi
-    
+
     # Install package in development mode
     print_status "Installing package in development mode..."
     pip install -e .
-    
+
     # Install pre-commit hooks if available
     if [[ -f ".pre-commit-config.yaml" ]]; then
         print_status "Installing pre-commit hooks..."
         pre-commit install
     fi
-    
+
     print_header "Virtual environment setup complete!"
     print_status "Virtual environment: $VIRTUAL_ENV"
     print_status "Python version: $(python --version)"
     print_status "Pip version: $(pip --version)"
-    
+
     echo
     print_header "To activate the virtual environment in the future, run:"
     echo -e "${BLUE}source $VENV_NAME/bin/activate${NC}"

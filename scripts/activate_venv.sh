@@ -43,17 +43,17 @@ if [[ "$VIRTUAL_ENV" == "$VENV_PATH" ]]; then
     echo -e "${GREEN}[INFO]${NC} Python: $(which python)"
     echo -e "${GREEN}[INFO]${NC} Pip: $(which pip)"
     echo -e "${GREEN}[INFO]${NC} Python version: $(python --version)"
-    
+
     # Set PYTHONPATH to include src directory
     export PYTHONPATH="$PROJECT_ROOT/src:$PYTHONPATH"
     echo -e "${GREEN}[INFO]${NC} PYTHONPATH updated to include src directory"
-    
+
     # Change to project root if not already there
     if [[ "$PWD" != "$PROJECT_ROOT" ]]; then
         cd "$PROJECT_ROOT"
         echo -e "${GREEN}[INFO]${NC} Changed directory to project root: $PROJECT_ROOT"
     fi
-    
+
     return 0
 else
     echo -e "${RED}[ERROR]${NC} Failed to activate virtual environment"
