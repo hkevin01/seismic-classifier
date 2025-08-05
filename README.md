@@ -54,6 +54,33 @@ A comprehensive Python-based machine learning platform for real-time seismic eve
 
 ### Installation
 
+#### Option 1: Automated Setup (Recommended)
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/seismic-classifier/seismic-classifier.git
+   cd seismic-classifier
+   ```
+
+2. **Run automated setup**
+   ```bash
+   # Complete project setup with virtual environment
+   make setup
+   
+   # Or use the setup script directly
+   bash scripts/setup_venv.sh
+   ```
+
+3. **Activate virtual environment**
+   ```bash
+   source venv/bin/activate
+   
+   # Or use the helper script
+   source scripts/activate_venv.sh
+   ```
+
+#### Option 2: Manual Setup
+
 1. **Clone the repository**
    ```bash
    git clone https://github.com/seismic-classifier/seismic-classifier.git
@@ -62,25 +89,31 @@ A comprehensive Python-based machine learning platform for real-time seismic eve
 
 2. **Create and activate virtual environment**
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\\Scripts\\activate
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
 3. **Install dependencies**
    ```bash
+   pip install --upgrade pip setuptools wheel
    pip install -r requirements.txt
+   pip install -r requirements-dev.txt
+   pip install -e .
    ```
 
-4. **Configure environment**
+4. **Setup pre-commit hooks** (optional but recommended)
+   ```bash
+   pre-commit install
+   ```
+
+5. **Configure environment**
    ```bash
    cp .env.example .env
    # Edit .env file with your configuration
    ```
 
-5. **Initialize the system**
-   ```bash
-   python scripts/data_download.py --help
-   ```
+> **⚠️ Important**: Always activate the virtual environment before working on the project.
+> See [Virtual Environment Guide](docs/VIRTUAL_ENVIRONMENT.md) for detailed instructions.
 
 ### Basic Usage
 
