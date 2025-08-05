@@ -3,10 +3,10 @@
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Development Status](https://img.shields.io/badge/status-Phases%201--3%20Complete-brightgreen.svg)](STATUS_COMPLETE.md)
-[![Tests](https://github.com/hkevin01/seismic-classifier/workflows/tests/badge.svg)](https://github.com/hkevin01/seismic-classifier/actions)
+[![Development Status](https://img.shields.io/badge/status-Phases%201--3%20%26%20GUI%20Complete-brightgreen.svg)](STATUS_COMPLETE.md)
+[![CI/CD Pipeline](https://github.com/hkevin01/seismic-classifier/actions/workflows/ci.yml/badge.svg)](https://github.com/hkevin01/seismic-classifier/actions/workflows/ci.yml)
 
-A comprehensive Python-based machine learning platform for real-time seismic event detection, analysis, and classification. This system integrates with authoritative seismic data sources (USGS and IRIS) to provide intelligent earthquake monitoring and analysis capabilities. **Now with complete Phase 1-3 implementation including production-ready data pipeline, advanced signal processing, and machine learning models!**
+A comprehensive Python-based machine learning platform for real-time seismic event detection, analysis, and classification. This system integrates with authoritative seismic data sources (USGS and IRIS) to provide intelligent earthquake monitoring and analysis capabilities. **Now with complete Phase 1-3 implementation including production-ready data pipeline, advanced signal processing, machine learning models, and a modern React-based GUI dashboard!**
 
 ## 🌍 Features
 
@@ -31,6 +31,15 @@ A comprehensive Python-based machine learning platform for real-time seismic eve
 - **Model Training**: Cross-validation, hyperparameter tuning, and performance evaluation
 - **Feature Importance**: Automated ranking and selection with interpretability analysis
 - **Model Persistence**: Save/load capabilities for trained models with joblib integration
+
+### ✅ **Interactive GUI Dashboard**
+
+- **Modern Web Interface**: React-based dashboard with TypeScript and responsive design
+- **Real-time Monitoring**: Live seismic waveform visualization and event detection
+- **Data Visualization**: Interactive charts with Recharts for comprehensive analysis
+- **File Management**: Drag-and-drop upload for SAC, MiniSEED, CSV, and JSON files
+- **Smart Notifications**: Real-time alerts and system status monitoring
+- **Professional UI**: Glass-effect design with dark/light theme support
 
 ### 🔍 Real-Time Monitoring
 
@@ -178,10 +187,43 @@ print('See notebooks/seismic_classifier_demo.ipynb for complete training example
 "
 ```
 
-## 📖 Documentation
+## �️ Interactive GUI Dashboard
+
+For a modern, web-based interface to interact with seismic data, we've built a comprehensive React application:
+
+### Quick Launch GUI
+
+```bash
+# Navigate to GUI application
+cd gui-app
+
+# Install dependencies and launch
+chmod +x launch.sh
+./launch.sh
+
+# Or manually:
+npm install
+npm run dev
+```
+
+### GUI Features
+
+- **🌊 Real-time Monitoring**: Live seismic waveform visualization and event detection
+- **📊 Interactive Dashboard**: Comprehensive overview with statistics and recent events
+- **📈 Data Analysis**: Advanced charts and visualizations for seismic data analysis
+- **📁 File Upload**: Support for SAC, MiniSEED, CSV, and JSON seismic data files
+- **🔔 Notifications**: Real-time alerts for significant seismic events
+- **🎨 Modern UI**: Responsive design with dark/light theme support
+
+The GUI application will be available at `http://localhost:3000` and provides an intuitive interface for monitoring, analyzing, and visualizing seismic events in real-time.
+
+For complete GUI documentation, see: **[GUI Dashboard Documentation](gui-app/README.md)**
+
+## �📖 Documentation
 
 - **[Project Status Complete](STATUS_COMPLETE.md)** - Full project completion summary and achievements
 - **[Interactive Demo Notebook](notebooks/seismic_classifier_demo.ipynb)** - Complete working demonstration
+- **[GUI Dashboard](gui-app/README.md)** - Modern web-based seismic monitoring dashboard
 - **[Project Plan](docs/PROJECT_PLAN.md)** - Comprehensive development roadmap
 - **[Virtual Environment Guide](docs/VIRTUAL_ENVIRONMENT.md)** - Virtual environment setup and usage
 - **[Workflow Guidelines](docs/WORKFLOW.md)** - Development workflow and Git practices
@@ -208,6 +250,14 @@ seismic-classifier/
 │   │   └── classification.py    # ✅ Random Forest, SVM, Neural Networks
 │   ├── config/                 # Configuration management
 │   └── utils/                  # Utility functions and helpers
+├── gui-app/                    # ✅ Modern React-based GUI dashboard
+│   ├── src/                    # React TypeScript source code
+│   │   ├── components/         # Reusable UI components
+│   │   ├── pages/              # Dashboard, monitoring, and analysis pages
+│   │   ├── store/              # State management with Zustand
+│   │   └── styles/             # Tailwind CSS styling
+│   ├── public/                 # Static assets
+│   └── README.md               # GUI application documentation
 ├── notebooks/                  # ✅ Complete Jupyter demonstration
 │   └── seismic_classifier_demo.ipynb # ✅ End-to-end workflow demo
 ├── tests/                      # Test suite
@@ -370,9 +420,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Discussions**: [GitHub Discussions](https://github.com/hkevin01/seismic-classifier/discussions)
 - **Contact**: [GitHub Repository](https://github.com/hkevin01/seismic-classifier)
 
-## 🎉 Project Status - PHASES 1-3 COMPLETE!
+## 🎉 Project Status - PHASES 1-3 & GUI COMPLETE
 
-**🌍 The seismic event classification pipeline is now fully operational!**
+**🌍 The seismic event classification pipeline is now fully operational with a modern web interface!**
 
 ### ✅ **IMPLEMENTATION COMPLETE - ALL CORE PHASES FINISHED!**
 
@@ -405,6 +455,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [x] **Visualization**: Waveform plots, feature distributions, and model performance charts
 - [x] **Complete Pipeline**: From data collection to trained ML models
 
+#### ✅ **Interactive GUI Dashboard - COMPLETE**
+
+- [x] **Modern Web Interface**: React 18 with TypeScript and responsive design
+- [x] **Real-time Monitoring**: Live seismic waveform visualization and event detection
+- [x] **Data Visualization**: Interactive charts using Recharts for comprehensive analysis
+- [x] **Professional UI**: Glass-effect design with dark/light theme support
+- [x] **File Management**: Drag-and-drop upload for multiple seismic data formats
+- [x] **Smart Features**: Real-time notifications, state management, and smooth animations
+
 ### 🚀 **Production-Ready Features**
 
 - **Enterprise-Grade Code**: Comprehensive error handling, logging, and resilience patterns
@@ -433,11 +492,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Location determination methods
 - Confidence interval analysis
 
-### Phase 5: Web Interface
-- Interactive dashboard with real-time monitoring
-- Geospatial visualization and mapping
-- Model performance monitoring
-- Alert and notification systems
+### ✅ Phase 5: Web Interface - COMPLETE
+- [x] Interactive dashboard with real-time monitoring
+- [x] Modern React-based GUI with TypeScript
+- [x] Real-time seismic waveform visualization
+- [x] Interactive data analysis and charts
+- [x] File upload and data management
+- [x] Professional UI with responsive design
 
 ### Phase 6: Production Deployment
 - Docker containerization
