@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Development Status](https://img.shields.io/badge/status-Phases%201--3%20Complete-brightgreen.svg)](STATUS_COMPLETE.md)
-[![Tests](https://github.com/seismic-classifier/seismic-classifier/workflows/tests/badge.svg)](https://github.com/seismic-classifier/seismic-classifier/actions)
+[![Tests](https://github.com/hkevin01/seismic-classifier/workflows/tests/badge.svg)](https://github.com/hkevin01/seismic-classifier/actions)
 
 A comprehensive Python-based machine learning platform for real-time seismic event detection, analysis, and classification. This system integrates with authoritative seismic data sources (USGS and IRIS) to provide intelligent earthquake monitoring and analysis capabilities. **Now with complete Phase 1-3 implementation including production-ready data pipeline, advanced signal processing, and machine learning models!**
 
@@ -68,7 +68,7 @@ A comprehensive Python-based machine learning platform for real-time seismic eve
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/seismic-classifier/seismic-classifier.git
+   git clone https://github.com/hkevin01/seismic-classifier.git
    cd seismic-classifier
    ```
 
@@ -93,7 +93,7 @@ A comprehensive Python-based machine learning platform for real-time seismic eve
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/seismic-classifier/seismic-classifier.git
+   git clone https://github.com/hkevin01/seismic-classifier.git
    cd seismic-classifier
    ```
 
@@ -366,9 +366,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 - **Documentation**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/seismic-classifier/seismic-classifier/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/seismic-classifier/seismic-classifier/discussions)
-- **Email**: [contact@seismic-classifier.org](mailto:contact@seismic-classifier.org)
+- **Issues**: [GitHub Issues](https://github.com/hkevin01/seismic-classifier/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/hkevin01/seismic-classifier/discussions)
+- **Contact**: [GitHub Repository](https://github.com/hkevin01/seismic-classifier)
 
 ## 🎉 Project Status - PHASES 1-3 COMPLETE!
 
