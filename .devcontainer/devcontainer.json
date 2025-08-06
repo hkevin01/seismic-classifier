@@ -1,0 +1,120 @@
+{
+    "name": "Seismic Classifier Development",
+    "dockerComposeFile": ["docker-compose.dev.yml"],
+
+    "service": "dev-backend",
+    "workspaceFolder": "/workspace",
+    "shutdownAction": "stopCompose",
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.black-formatter",
+                "ms-python.flake8",
+                "ms-python.mypy-type-checker",
+                "ms-python.pylint",
+                "charliermarsh.ruff",
+                "ms-toolsai.jupyter",
+                "ms-vscode.test-adapter-converter",
+                "littlefoxteam.vscode-python-test-adapter",
+                "njpwerner.autodocstring",
+                "kevinrose.vsc-python-indent",
+                "ms-vscode.vscode-json",
+                "redhat.vscode-yaml",
+                "bradlc.vscode-tailwindcss",
+                "ms-vscode.vscode-typescript-next",
+                "esbenp.prettier-vscode",
+                "dbaeumer.vscode-eslint",
+                "ms-vscode-remote.remote-containers",
+                "ms-azuretools.vscode-docker",
+                "GitHub.copilot",
+                "GitHub.copilot-chat",
+                "ms-vscode.live-server",
+                "humao.rest-client"
+            ],
+
+            "settings": {
+                "python.defaultInterpreterPath": "/workspace/.venv/bin/python",
+                "python.terminal.activateEnvironment": true,
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": false,
+                "python.linting.flake8Enabled": true,
+                "python.linting.mypyEnabled": true,
+                "python.formatting.provider": "black",
+                "python.testing.pytestEnabled": true,
+                "python.testing.unittestEnabled": false,
+                "python.testing.pytestArgs": [
+                    "tests"
+                ],
+                "[python]": {
+                    "editor.formatOnSave": true,
+                    "editor.codeActionsOnSave": {
+                        "source.organizeImports": "explicit"
+                    }
+                },
+                "[typescript]": {
+                    "editor.formatOnSave": true,
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                },
+                "[typescriptreact]": {
+                    "editor.formatOnSave": true,
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                },
+                "[json]": {
+                    "editor.formatOnSave": true,
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                },
+                "[yaml]": {
+                    "editor.formatOnSave": true,
+                    "editor.defaultFormatter": "redhat.vscode-yaml"
+                },
+                "files.watcherExclude": {
+                    "**/node_modules/**": true,
+                    "**/.venv/**": true,
+                    "**/venv/**": true,
+                    "**/__pycache__/**": true,
+                    "**/.pytest_cache/**": true,
+                    "**/dist/**": true,
+                    "**/build/**": true
+                },
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "/bin/bash"
+                    }
+                }
+            }
+        }
+    },
+
+    "forwardPorts": [8000, 8888, 3000, 5432, 6379],
+    "portsAttributes": {
+        "8000": {
+            "label": "FastAPI Dev Server",
+            "onAutoForward": "notify"
+        },
+        "8888": {
+            "label": "Jupyter Notebook",
+            "onAutoForward": "silent"
+        },
+        "3000": {
+            "label": "React Dev Server",
+            "onAutoForward": "notify"
+        },
+        "5432": {
+            "label": "PostgreSQL Database",
+            "onAutoForward": "silent"
+        },
+        "6379": {
+            "label": "Redis Cache",
+            "onAutoForward": "silent"
+        }
+    },
+
+    "postCreateCommand": "echo '🚀 Seismic Classifier development environment ready!'",
+    "postStartCommand": "echo '✅ All services started. Check ports 8000 (API) and 3000 (Frontend)'",
+
+    "remoteUser": "root",
+    "containerUser": "root"
+}

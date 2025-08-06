@@ -1,0 +1,366 @@
+name: Universal Docker Development CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
+jobs:
+  # Test Development Environment Setup
+  dev-environment-test:
+    name: Test Development Environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create .env file
+        run: |
+          cat > .env << EOF
+          DEVELOPMENT=true
+          LOG_LEVEL=DEBUG
+          DATABASE_URL=postgresql://postgres:password@dev-db:5432/seismic_dev
+          REDIS_URL=redis://dev-redis:6379/0
+          PYTHONPATH=/workspace/src
+          NODE_ENV=development
+          REACT_APP_API_URL=http://localhost:8000
+          REACT_APP_WS_URL=ws://localhost:8000/ws
+          EOF
+
+      - name: Build development containers
+        run: |
+          docker-compose -f docker-compose.dev.yml build --parallel
+
+      - name: Start development environment
+        run: |
+          docker-compose -f docker-compose.dev.yml up -d dev-backend dev-frontend dev-db dev-redis
+
+      - name: Wait for services to be ready
+        run: |
+          timeout 120s bash -c 'until docker-compose -f docker-compose.dev.yml exec -T dev-db pg_isready -U postgres; do sleep 2; done'
+          timeout 60s bash -c 'until docker-compose -f docker-compose.dev.yml exec -T dev-redis redis-cli ping | grep PONG; do sleep 2; done'
+
+      - name: Install dependencies
+        run: |
+          docker-compose -f docker-compose.dev.yml exec -T dev-backend pip install -e . --quiet
+          docker-compose -f docker-compose.dev.yml exec -T dev-frontend npm ci --silent
+
+      - name: Verify backend health
+        run: |
+          timeout 60s bash -c 'until curl -f http://localhost:8000/health; do sleep 5; done'
+
+      - name: Verify frontend build
+        run: |
+          docker-compose -f docker-compose.dev.yml exec -T dev-frontend npm run build
+
+      - name: Show service status
+        run: |
+          docker-compose -f docker-compose.dev.yml ps
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker-compose -f docker-compose.dev.yml down -v
+
+  # Backend Tests
+  backend-tests:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend container
+        run: |
+          docker-compose -f docker-compose.dev.yml build dev-backend
+
+      - name: Start database services
+        run: |
+          docker-compose -f docker-compose.dev.yml up -d dev-db dev-redis
+
+      - name: Wait for database
+        run: |
+          timeout 60s bash -c 'until docker-compose -f docker-compose.dev.yml exec -T dev-db pg_isready -U postgres; do sleep 2; done'
+
+      - name: Run backend tests
+        run: |
+          docker-compose -f docker-compose.dev.yml run --rm dev-backend python -m pytest tests/ -v --cov=src/seismic_classifier --cov-report=xml --cov-report=term
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          flags: backend
+          name: backend-coverage
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker-compose -f docker-compose.dev.yml down -v
+
+  # Frontend Tests
+  frontend-tests:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build frontend container
+        run: |
+          docker-compose -f docker-compose.dev.yml build dev-frontend
+
+      - name: Run frontend tests
+        run: |
+          docker-compose -f docker-compose.dev.yml run --rm dev-frontend npm test -- --coverage --watchAll=false
+
+      - name: Run frontend lint
+        run: |
+          docker-compose -f docker-compose.dev.yml run --rm dev-frontend npm run lint
+
+      - name: Run frontend type check
+        run: |
+          docker-compose -f docker-compose.dev.yml run --rm dev-frontend npm run type-check
+
+      - name: Build frontend
+        run: |
+          docker-compose -f docker-compose.dev.yml run --rm dev-frontend npm run build
+
+  # Code Quality
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build tools container
+        run: |
+          docker-compose -f docker-compose.dev.yml build dev-tools
+
+      - name: Run Python code quality
+        run: |
+          docker-compose -f docker-compose.dev.yml run --rm dev-tools black --check src/ tests/
+          docker-compose -f docker-compose.dev.yml run --rm dev-tools flake8 src/ tests/
+          docker-compose -f docker-compose.dev.yml run --rm dev-tools mypy src/
+          docker-compose -f docker-compose.dev.yml run --rm dev-tools isort --check-only src/ tests/
+
+      - name: Run security checks
+        run: |
+          docker-compose -f docker-compose.dev.yml run --rm dev-tools bandit -r src/ -f json -o bandit-report.json || true
+          docker-compose -f docker-compose.dev.yml run --rm dev-tools safety check --json > safety-report.json || true
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+            safety-report.json
+
+  # Integration Tests
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: [backend-tests, frontend-tests]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Start full development environment
+        run: |
+          docker-compose -f docker-compose.dev.yml up -d
+
+      - name: Wait for all services
+        run: |
+          timeout 120s bash -c 'until docker-compose -f docker-compose.dev.yml exec -T dev-db pg_isready -U postgres; do sleep 2; done'
+          timeout 60s bash -c 'until docker-compose -f docker-compose.dev.yml exec -T dev-redis redis-cli ping | grep PONG; do sleep 2; done'
+          timeout 120s bash -c 'until curl -f http://localhost:8000/health; do sleep 5; done'
+          timeout 120s bash -c 'until curl -f http://localhost:3000; do sleep 5; done'
+
+      - name: Run database migrations
+        run: |
+          docker-compose -f docker-compose.dev.yml exec -T dev-backend alembic upgrade head
+
+      - name: Run integration tests
+        run: |
+          docker-compose -f docker-compose.dev.yml exec -T dev-backend python -m pytest tests/integration/ -v
+
+      - name: Test API endpoints
+        run: |
+          curl -f http://localhost:8000/docs
+          curl -f http://localhost:8000/health
+          curl -f http://localhost:8000/api/v1/status
+
+      - name: Show service logs on failure
+        if: failure()
+        run: |
+          docker-compose -f docker-compose.dev.yml logs
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker-compose -f docker-compose.dev.yml down -v
+
+  # Performance Tests
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Start development environment
+        run: |
+          docker-compose -f docker-compose.dev.yml up -d dev-backend dev-db dev-redis
+
+      - name: Wait for services
+        run: |
+          timeout 120s bash -c 'until curl -f http://localhost:8000/health; do sleep 5; done'
+
+      - name: Install wrk
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wrk
+
+      - name: Run performance tests
+        run: |
+          wrk -t4 -c100 -d30s --latency http://localhost:8000/health
+          wrk -t4 -c100 -d30s --latency http://localhost:8000/api/v1/status
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker-compose -f docker-compose.dev.yml down -v
+
+  # Container Security Scan
+  security-scan:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build containers
+        run: |
+          docker-compose -f docker-compose.dev.yml build
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "seismic-classifier-dev-backend:latest"
+          format: "sarif"
+          output: "trivy-results.sarif"
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: "trivy-results.sarif"
+
+  # Documentation Build
+  docs-build:
+    name: Documentation Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend container
+        run: |
+          docker-compose -f docker-compose.dev.yml build dev-backend
+
+      - name: Generate documentation
+        run: |
+          docker-compose -f docker-compose.dev.yml run --rm dev-backend sphinx-build -b html docs/ docs/_build/html
+
+      - name: Upload documentation
+        uses: actions/upload-artifact@v3
+        with:
+          name: documentation
+          path: docs/_build/html/
+
+  # Deployment Readiness Check
+  deployment-check:
+    name: Deployment Readiness
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [integration-tests, code-quality, security-scan]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build production container
+        run: |
+          docker build -t seismic-classifier:latest .
+
+      - name: Test production container
+        run: |
+          docker run -d --name test-prod -p 8080:8000 seismic-classifier:latest
+          sleep 10
+          curl -f http://localhost:8080/health
+          docker stop test-prod
+          docker rm test-prod
+
+      - name: Validate Kubernetes manifests
+        run: |
+          if [ -d "k8s/" ]; then
+            docker run --rm -v $(pwd):/workspace -w /workspace kubeval/kubeval k8s/*.yaml
+          fi
+
+      - name: Validate Terraform configuration
+        run: |
+          if [ -d "infrastructure/" ]; then
+            docker run --rm -v $(pwd):/workspace -w /workspace/infrastructure hashicorp/terraform:latest init -backend=false
+            docker run --rm -v $(pwd):/workspace -w /workspace/infrastructure hashicorp/terraform:latest validate
+          fi

@@ -1,0 +1,220 @@
+# Docker Compose for Development Environments
+# Provides isolated, consistent development environments for all team members
+
+version: "3.8"
+
+services:
+  # Development Backend Environment
+  dev-backend:
+    build:
+      context: .
+      dockerfile: docker/dev-backend.Dockerfile
+    container_name: seismic-dev-backend
+    ports:
+      - "8000:8000" # FastAPI development server
+      - "8888:8888" # Jupyter notebook
+      - "5555:5555" # Celery flower
+      - "6379:6379" # Redis (if running locally)
+    volumes:
+      - ./:/workspace
+      - backend-venv:/workspace/.venv
+      - jupyter-config:/root/.jupyter
+      - pip-cache:/root/.cache/pip
+    environment:
+      - PYTHONPATH=/workspace/src
+      - DEVELOPMENT=true
+      - LOG_LEVEL=DEBUG
+      - DATABASE_URL=postgresql://postgres:password@dev-db:5432/seismic_dev
+      - REDIS_URL=redis://dev-redis:6379/0
+      - JUPYTER_ENABLE_LAB=yes
+    networks:
+      - dev-network
+    depends_on:
+      - dev-db
+      - dev-redis
+    stdin_open: true
+    tty: true
+    working_dir: /workspace
+    command:
+      [
+        "python",
+        "-m",
+        "uvicorn",
+        "seismic_classifier.api.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--reload",
+      ]
+
+  # Development Frontend Environment
+  dev-frontend:
+    build:
+      context: .
+      dockerfile: docker/dev-frontend.Dockerfile
+    container_name: seismic-dev-frontend
+    ports:
+      - "3000:3000" # React development server
+      - "6006:6006" # Storybook
+    volumes:
+      - ./gui-app:/workspace
+      - frontend-modules:/workspace/node_modules
+      - npm-cache:/root/.npm
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_WS_URL=ws://localhost:8000/ws
+    networks:
+      - dev-network
+    stdin_open: true
+    tty: true
+    working_dir: /workspace
+    command: ["npm", "start"]
+
+  # Development Tools Environment
+  dev-tools:
+    build:
+      context: .
+      dockerfile: docker/dev-tools.Dockerfile
+    container_name: seismic-dev-tools
+    volumes:
+      - ./:/workspace
+      - tools-cache:/root/.cache
+    environment:
+      - WORKSPACE_PATH=/workspace
+    networks:
+      - dev-network
+    stdin_open: true
+    tty: true
+    working_dir: /workspace
+    profiles:
+      - tools
+
+  # Development Database
+  dev-db:
+    image: postgres:15-alpine
+    container_name: seismic-dev-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=seismic_dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Development Redis
+  dev-redis:
+    image: redis:7-alpine
+    container_name: seismic-dev-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - dev-redis-data:/data
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Development MongoDB (for advanced analytics)
+  dev-mongo:
+    image: mongo:6
+    container_name: seismic-dev-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=seismic_dev
+    volumes:
+      - dev-mongo-data:/data/db
+      - ./database/mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - dev-network
+    profiles:
+      - analytics
+
+  # Development Elasticsearch (for logging and search)
+  dev-elasticsearch:
+    image: elasticsearch:8.11.0
+    container_name: seismic-dev-elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - dev-es-data:/usr/share/elasticsearch/data
+    networks:
+      - dev-network
+    profiles:
+      - analytics
+
+  # Development MinIO (for object storage)
+  dev-minio:
+    image: minio/minio:latest
+    container_name: seismic-dev-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin123
+    volumes:
+      - dev-minio-data:/data
+    networks:
+      - dev-network
+    profiles:
+      - storage
+    command: server /data --console-address ":9001"
+
+networks:
+  dev-network:
+    driver: bridge
+    name: seismic-dev-network
+
+volumes:
+  # Backend volumes
+  backend-venv:
+    name: seismic-backend-venv
+  jupyter-config:
+    name: seismic-jupyter-config
+  pip-cache:
+    name: seismic-pip-cache
+
+  # Frontend volumes
+  frontend-modules:
+    name: seismic-frontend-modules
+  npm-cache:
+    name: seismic-npm-cache
+
+  # Tools volumes
+  tools-cache:
+    name: seismic-tools-cache
+
+  # Database volumes
+  dev-db-data:
+    name: seismic-dev-db-data
+  dev-redis-data:
+    name: seismic-dev-redis-data
+  dev-mongo-data:
+    name: seismic-dev-mongo-data
+  dev-es-data:
+    name: seismic-dev-es-data
+  dev-minio-data:
+    name: seismic-dev-minio-data
