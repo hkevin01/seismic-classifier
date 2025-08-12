@@ -210,6 +210,29 @@ health-check: ## Check health of all services
 	@docker-compose -f docker-compose.dev.yml exec dev-db pg_isready -U postgres && echo "✅ Database healthy" || echo "❌ Database unhealthy"
 	@docker-compose -f docker-compose.dev.yml exec dev-redis redis-cli ping && echo "✅ Redis healthy" || echo "❌ Redis unhealthy"
 
+# ---------------------------------------------------------------------------
+# Additional Docker UX Targets (API + GUI production style)
+# ---------------------------------------------------------------------------
+.PHONY: docker-build docker-up docker-down docker-logs docker-sh api-sh
+
+docker-build: ## Build core API image (production Dockerfile)
+	@docker build -t seismic-classifier-api:latest .
+
+docker-up: ## Bring up API + default compose stack
+	@docker compose up -d
+
+docker-down: ## Tear down compose stack
+	@docker compose down
+
+docker-logs: ## Tail API logs
+	@docker logs -f seismic-api || echo "API container not running"
+
+docker-sh: ## Interactive shell inside running API container
+	@docker exec -it seismic-api /bin/bash || echo "API container not running"
+
+api-sh: ## Run a disposable shell in API image
+	@docker run --rm -it seismic-classifier-api:latest /bin/bash
+
 # Legacy support (for backward compatibility)
 venv: dev-up ## Legacy: Start development environment
 setup: quick-start ## Legacy: Complete project setup
