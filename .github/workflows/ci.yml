@@ -117,3 +117,20 @@ jobs:
           name: security-reports
           path: |
             bandit-report.json
+
+  docker-smoke:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build API image
+        run: docker build -t seismic-classifier:ci .
+      - name: Run container
+        run: |
+          docker run -d -p 8000:8000 --name seismic-api seismic-classifier:ci
+          sleep 10
+      - name: Health check
+        run: curl -f http://localhost:8000/health
+      - name: Logs on failure
+        if: failure()
+        run: docker logs seismic-api

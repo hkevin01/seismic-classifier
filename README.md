@@ -141,6 +141,58 @@ A comprehensive Python-based machine learning platform for real-time seismic eve
 
 > **⚠️ Important**: Always activate the virtual environment before working on the project.
 
+### 🐳 Run with Docker (API + GUI + Jupyter)
+
+The project ships with a multi-stage Docker image and a compose stack for the API, React GUI, and Jupyter Lab.
+
+```bash
+# 1. Copy environment template
+cp .env.example .env
+
+# 2. Build images
+docker compose build
+
+# 3. Start stack (API on 8000, GUI on 3000, Jupyter on 8888)
+docker compose up -d
+
+# 4. Tail logs (optional)
+docker compose logs -f api
+
+# 5. Run smoke test (health)
+curl -s http://localhost:8000/health | jq .
+```
+
+Endpoints:
+
+- Health: `GET http://localhost:8000/health`
+- Recent Events: `POST http://localhost:8000/events/recent` JSON: `{ "hours": 24, "min_magnitude": 5.0 }`
+- Feature Extraction: `POST http://localhost:8000/features/extract` JSON: `{ "sampling_rate": 100.0, "waveform": [0.0,1.0,...] }`
+- Classification: `POST http://localhost:8000/classify`
+- Detection: `POST http://localhost:8000/detect`
+- Magnitude: `POST http://localhost:8000/magnitude`
+
+Example feature extraction request:
+
+```bash
+curl -X POST http://localhost:8000/features/extract \
+   -H 'Content-Type: application/json' \
+   -d '{"sampling_rate":100.0,"waveform":[0,1,0,-1,0,1,0,-1]}' | jq '.num_features'
+```
+
+Shut down:
+
+```bash
+docker compose down
+```
+
+Open services:
+
+- API: <http://localhost:8000/docs> (interactive Swagger docs)
+- GUI: <http://localhost:3000>
+- Jupyter Lab: <http://localhost:8888> (token disabled in compose command)
+
+> Tip: Use `make docker-up` / `make docker-down` for shortcuts (see Makefile).
+
 ### Basic Usage
 
 #### 1. Run the Complete Demo
@@ -219,7 +271,8 @@ if events:
 ## 📊 Architecture
 
 ### Data Pipeline
-```
+
+```text
 Raw Data → Validation → Preprocessing → Feature Extraction → Classification
    ↓          ↓             ↓               ↓                   ↓
 Storage    Cleaning     Filtering      Feature Matrix      Prediction
@@ -228,7 +281,8 @@ Cache     Reporting    QC Metrics     Feature Store        Results
 ```
 
 ### Advanced Analytics Pipeline
-```
+
+```text
 Continuous Data → Event Detection → Magnitude Estimation → Location Analysis
        ↓               ↓                   ↓                    ↓
   Preprocessing    ML Validation     Confidence Bounds     Uncertainty
@@ -536,12 +590,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🔮 Future Enhancements (Optional Phases)
 
 ### Phase 4: Advanced Analytics
+
 - Real-time event detection and alerting systems
 - Magnitude estimation algorithms
 - Location determination methods
 - Confidence interval analysis
 
 ### ✅ Phase 5: Web Interface - COMPLETE
+
 - [x] Interactive dashboard with real-time monitoring
 - [x] Modern React-based GUI with TypeScript
 - [x] Real-time seismic waveform visualization
@@ -550,6 +606,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [x] Professional UI with responsive design
 
 ### Phase 6: Production Deployment
+
 - Docker containerization
 - Cloud deployment (AWS/Azure/GCP)
 - REST API service endpoints
@@ -557,4 +614,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-*Built with ❤️ for the global seismology community*
+Built with ❤️ for the global seismology community.
