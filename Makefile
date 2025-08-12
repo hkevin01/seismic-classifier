@@ -161,12 +161,19 @@ docs: ## Generate documentation
 	docker-compose -f docker-compose.dev.yml exec dev-backend sphinx-build -b html docs/ docs/_build/html
 	@echo "📖 Documentation available at: docs/_build/html/index.html"
 
-clean: ## Clean development environment
-	@echo "🧹 Cleaning development environment..."
-	docker-compose -f docker-compose.dev.yml down -v --remove-orphans
-	docker system prune -f
-	docker volume prune -f
-	@echo "✅ Development environment cleaned!"
+clean: ## Clean up build artifacts and caches
+	@echo "🧹 Cleaning up..."
+	rm -rf build/ dist/ *.egg-info/
+	rm -rf .pytest_cache/ .coverage htmlcov/
+	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+	find . -type f -name "*.pyc" -delete
+	docker volume rm seismic-dev-db-data || true
+	@echo "✅ Cleanup complete!"
+
+clean-docs: ## Remove redundant documentation files
+	@echo "🧹 Cleaning redundant docs..."
+	rm -f README_NEW.md README_OLD.md STATUS.md
+	@echo "✅ Documentation cleanup complete!"
 
 # Production Building
 build: ## Build production containers

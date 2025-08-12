@@ -3,10 +3,11 @@
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Development Status](https://img.shields.io/badge/status-Phase%206%20Complete-brightgreen.svg)](STATUS_COMPLETE.md)
+[![Development Status](https://img.shields.io/badge/status-Complete%20%2B%20API-brightgreen.svg)](STATUS_COMPLETE.md)
 [![CI/CD Pipeline](https://github.com/hkevin01/seismic-classifier/actions/workflows/ci.yml/badge.svg)](https://github.com/hkevin01/seismic-classifier/actions/workflows/ci.yml)
+[![Docker](https://img.shields.io/badge/docker-enabled-blue.svg)](docker-compose.yml)
 
-A comprehensive Python-based machine learning platform for real-time seismic event detection, analysis, and classification. This system integrates with authoritative seismic data sources (USGS and IRIS) to provide intelligent earthquake monitoring and analysis capabilities. **Now with complete Phase 1-6 implementation including production-ready data pipeline, advanced signal processing, machine learning models, modern React-based GUI dashboard, advanced analytics capabilities, and cloud deployment with monitoring!**
+A comprehensive Python-based machine learning platform for real-time seismic event detection, analysis, and classification. This system integrates with authoritative seismic data sources (USGS and IRIS) to provide intelligent earthquake monitoring and analysis capabilities. **Complete implementation with production-ready data pipeline, advanced signal processing, machine learning models, modern React-based GUI dashboard, REST API, and Docker deployment!**
 
 ## 🌍 Features
 
@@ -39,6 +40,15 @@ A comprehensive Python-based machine learning platform for real-time seismic eve
 - **Location Determination**: Advanced triangulation with uncertainty quantification
 - **Confidence Analysis**: Statistical bounds and visualization for all parameters
 - **Parallel Processing**: Multi-core processing capabilities for high-throughput analysis
+
+### ✅ **REST API Service (New)**
+
+- **FastAPI Framework**: High-performance async web API with automatic OpenAPI documentation
+- **Core Endpoints**: Health, recent events, feature extraction, classification, detection, magnitude estimation
+- **Dependency Injection**: Testable architecture with configurable service providers
+- **Docker Ready**: Multi-stage production container with non-root user and health checks
+- **CORS Support**: Configurable cross-origin resource sharing for web frontends
+- **Error Handling**: Comprehensive HTTP status codes and error responses
 
 ### ✅ **Interactive GUI Dashboard**
 
@@ -268,7 +278,66 @@ if events:
 "
 ```
 
-## 📊 Architecture
+## 🌐 API Usage
+
+### REST API Endpoints
+
+The API server exposes key pipeline capabilities through HTTP endpoints:
+
+```bash
+# Health check
+curl http://localhost:8000/health
+
+# Get recent earthquakes (USGS)
+curl -X POST http://localhost:8000/events/recent \
+  -H "Content-Type: application/json" \
+  -d '{"hours": 24, "min_magnitude": 5.0}'
+
+# Extract features from waveform data
+curl -X POST http://localhost:8000/features/extract \
+  -H "Content-Type: application/json" \
+  -d '{"sampling_rate": 100.0, "waveform": [0.1, 0.2, -0.1, 0.3, -0.2]}'
+
+# Classify seismic event type
+curl -X POST http://localhost:8000/classify \
+  -H "Content-Type: application/json" \
+  -d '{"sampling_rate": 100.0, "waveform": [0.1, 0.2, -0.1, 0.3, -0.2]}'
+```
+
+Interactive API documentation available at `http://localhost:8000/docs` when running.
+
+## � Project Structure & Cleanup
+
+The project maintains a clean, organized structure:
+
+```text
+seismic-classifier/
+├── src/seismic_classifier/       # Complete source code implementation
+│   ├── data_pipeline/           # Data collection and processing
+│   ├── feature_engineering/     # Signal processing & features
+│   ├── ml_models/              # Machine learning models
+│   ├── advanced_analytics/     # Event detection & magnitude estimation
+│   └── api/                    # REST API server (NEW)
+├── tests/                      # Test suite with API coverage
+├── docker-compose.yml          # Multi-service stack
+├── Dockerfile                  # Multi-stage production image
+├── requirements.txt            # Python dependencies
+└── README.md                   # This file
+```
+
+### Cleanup Commands
+
+Remove redundant documentation files:
+
+```bash
+# Clean up duplicate README files and outdated status docs
+make clean-docs
+
+# Or manually:
+rm -f README_NEW.md README_OLD.md STATUS.md
+```
+
+## 🏗️ Architecture
 
 ### Data Pipeline
 
@@ -335,7 +404,7 @@ For complete GUI documentation, see: **[GUI Dashboard Documentation](gui-app/REA
 - **[Deployment Guide](docs/deployment.md)** - Production deployment instructions (coming soon)
 - **[Contributing Guidelines](docs/CONTRIBUTING.md)** - How to contribute to the project (coming soon)
 
-## 🏗️ Architecture
+## 📂 Project Structure
 
 ```text
 seismic-classifier/
@@ -523,33 +592,32 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Discussions**: [GitHub Discussions](https://github.com/hkevin01/seismic-classifier/discussions)
 - **Contact**: [GitHub Repository](https://github.com/hkevin01/seismic-classifier)
 
-## 🎉 Project Status - PHASES 1-3 & GUI COMPLETE
+## 🎉 Project Status - IMPLEMENTATION COMPLETE + API
 
-**🌍 The seismic event classification pipeline is now fully operational with a modern web interface!**
+**🌍 The seismic event classification system is fully operational with REST API and Docker support!**
 
-### ✅ **IMPLEMENTATION COMPLETE - ALL CORE PHASES FINISHED!**
+### ✅ **COMPLETE IMPLEMENTATION - ALL PHASES + API**
 
-#### ✅ **Core Infrastructure (Phase 1) - COMPLETE**
+#### ✅ **Core Infrastructure (Phase 1-3) - COMPLETE**
 
 - [x] **USGS API Client**: Production-ready client with rate limiting, caching, and error handling
 - [x] **IRIS Data Client**: Complete ObsPy integration for waveform data retrieval
 - [x] **Data Validation**: Comprehensive quality control and data integrity checks
-- [x] **Database Layer**: SQLite storage architecture with file-based waveform management
-- [x] **Error Handling**: Circuit breakers, retry policies, and comprehensive resilience patterns
+- [x] **Machine Learning**: Random Forest, SVM, Neural Networks, and Gradient Boosting
+- [x] **Feature Engineering**: 30+ time-domain, frequency-domain, and wavelet features
 
-#### ✅ **Signal Processing (Phase 2) - COMPLETE**
+#### ✅ **Advanced Analytics (Phase 4) - COMPLETE**
 
-- [x] **Signal Preprocessing**: Multi-rate filtering, noise reduction, and detrending algorithms
-- [x] **Feature Extraction**: 30+ time-domain, frequency-domain, and wavelet features
-- [x] **Quality Assessment**: Automated signal-to-noise ratio and quality metrics
-- [x] **Spectral Analysis**: FFT-based analysis, power spectral density, and frequency band analysis
+- [x] **Real-time Detection**: STA/LTA and ML-based event detection algorithms
+- [x] **Magnitude Estimation**: ML-based magnitude estimation with confidence intervals  
+- [x] **Signal Processing**: Multi-rate filtering, noise reduction, and spectral analysis
 
-#### ✅ **Machine Learning (Phase 3) - COMPLETE**
+#### ✅ **REST API Service (New) - COMPLETE**
 
-- [x] **Multiple Algorithms**: Random Forest, SVM, Neural Networks, and Gradient Boosting
-- [x] **Model Training**: Cross-validation, hyperparameter tuning, and performance evaluation
-- [x] **Feature Importance**: Automated ranking and selection with interpretability analysis
-- [x] **Model Persistence**: Save/load capabilities with joblib integration
+- [x] **FastAPI Server**: High-performance async web API with OpenAPI documentation
+- [x] **Core Endpoints**: Health, USGS events, feature extraction, classification, detection, magnitude
+- [x] **Docker Ready**: Multi-stage production container with non-root user and health checks
+- [x] **CI Pipeline**: Automated testing, linting, and docker smoke tests
 
 #### ✅ **Documentation & Demonstration - COMPLETE**
 
